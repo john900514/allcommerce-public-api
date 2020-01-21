@@ -10,6 +10,8 @@ pipelines:
     master:
       - step:
           name: Perform Unit Testing Production
+          services:
+            - mysql
           script:
             - apt-get update && apt-get install -y libzip-dev zip
             - docker-php-ext-install zip
@@ -33,6 +35,8 @@ pipelines:
     staging:
       - step:
           name: Perform Unit Testing Staging
+          services:
+            - mysql
           script:
             - apt-get update && apt-get install -y libzip-dev zip
             - docker-php-ext-install zip
@@ -56,6 +60,8 @@ pipelines:
     develop:
       - step:
           name: Automated Test & Deploy to Develop
+          services:
+            - mysql
           deployment: test
           script:
             - apt-get update && apt-get install -y libzip-dev zip
