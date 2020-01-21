@@ -13,7 +13,7 @@ pipelines:
           services:
             - mysql
           script:
-            - apt-get update && apt-get install -y libzip-dev zip mysql-client
+            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
             - docker-php-ext-install zip
             - yes | pecl install mcrypt-1.0.1
             - docker-php-ext-install pdo_mysql
@@ -41,7 +41,7 @@ pipelines:
           services:
             - mysql
           script:
-            - apt-get update && apt-get install -y libzip-dev zip mysql-client
+            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
             - docker-php-ext-install zip
             - yes | pecl install mcrypt-1.0.1
             - docker-php-ext-install pdo_mysql
@@ -69,7 +69,7 @@ pipelines:
             - mysql
           deployment: test
           script:
-            - apt-get update && apt-get install -y libzip-dev zip mysql-client
+            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
             - docker-php-ext-install zip
             - yes | pecl install mcrypt-1.0.1
             - docker-php-ext-install pdo_mysql
