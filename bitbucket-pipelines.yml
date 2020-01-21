@@ -76,7 +76,7 @@ pipelines:
 definitions:
   services:
     mysql:
-      image: mysql:5.8
+      image: mysql:8
       variables:
         MYSQL_DATABASE: 'pipelines'
         MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
