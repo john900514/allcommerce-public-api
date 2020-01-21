@@ -72,8 +72,8 @@ pipelines:
             - docker-php-ext-install pdo_mysql
             - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
-            - ln -f -s .env.pipelines .env
             - composer require laravel/vapor-cli
+            - ln -f -s .env.pipelines .env
             - php artisan migrate
             - vendor/bin/phpunit
             - vendor/bin/vapor deploy develop
