@@ -33,9 +33,15 @@
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
         <server name="DB_CONNECTION" value="mysql"/>
-        <server name="DB_DATABASE" value="homestead"/>
+        <server name="DB_DATABASE" value="allcommerce_api_local"/>
         <server name="MAIL_DRIVER" value="array"/>
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="SESSION_DRIVER" value="array"/>
+        <env name="API_STANDARDS_TREE" value="vnd"/>
+        <env name="API_SUBTYPE" value="allcommerce"/>
+        <env name="API_DOMAIN" value="127.0.0.1"/>
+        <env name="API_VERSION" value="v1"/>
+        <env name="API_DEFAULT_FORMAT" value="json"/>
+        <env name="API_STRICT" value="false"/>
     </php>
 </phpunit>
