@@ -39,7 +39,7 @@
         <server name="SESSION_DRIVER" value="array"/>
         <env name="API_STANDARDS_TREE" value="vnd"/>
         <env name="API_SUBTYPE" value="allcommerce"/>
-        <env name="API_DOMAIN" value="127.0.0.1"/>
+        <env name="API_DOMAIN" value="ac-api.capeandbay.test"/>
         <env name="API_VERSION" value="v1"/>
         <env name="API_DEFAULT_FORMAT" value="json"/>
         <env name="API_STRICT" value="false"/>

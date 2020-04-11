@@ -33,7 +33,7 @@ class JWTUserRouteTest extends TestCase
         $header['Accept'] = 'application/json';
         $header['Authorization'] = 'Bearer '.$token;
 
-        $resp = $this->json('POST', '/api/me',[], $header);
+        $resp = $this->json('POST', 'http://ac-api.capeandbay.test/api/me',[], $header);
 
         var_dump(json_decode($resp->getContent(), true));
 
