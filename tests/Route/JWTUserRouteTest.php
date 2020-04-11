@@ -30,10 +30,10 @@ class JWTUserRouteTest extends TestCase
         $token = auth()->refresh();
 
         $header = [];
-        $header['Accept'] = 'application/json';
+        $header['Accept'] = 'vnd.allcommerce.v1+json';
         $header['Authorization'] = 'Bearer '.$token;
 
-        $resp = $this->json('POST', 'http://ac-api.capeandbay.test/api/me',[], $header);
+        $resp = $this->post( 'http://ac-api.capeandbay.test/api/me',[], $header);
 
         var_dump(json_decode($resp->getContent(), true));
 
