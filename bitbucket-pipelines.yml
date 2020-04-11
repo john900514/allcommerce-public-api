@@ -10,18 +10,24 @@ pipelines:
     master:
       - step:
           name: Perform Unit Testing Production
-          services:
-            - mysql
+          caches:
+            - composer
+            - node
           script:
-            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
-            - docker-php-ext-install zip
+            - apt-get update && apt-get install -qy libzip-dev zip libpng-dev git npm curl libmcrypt-dev default-mysql-client
             - docker-php-ext-install pdo_mysql
             - docker-php-ext-install zip
+            - docker-php-ext-install gd
             - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
             - ln -f -s .env.pipelines .env
+            - npm install && npm run dev
             - php artisan migrate
-            - vendor/bin/phpunit
+            - php artisan serve &
+            - sleep 5
+            - php artisan config:clear && vendor/bin/phpunit
+          services:
+            - mysql
       - step:
           name: Execute Production Deployment
           deployment: production
@@ -37,17 +43,24 @@ pipelines:
     staging:
       - step:
           name: Perform Unit Testing Staging
-          services:
-            - mysql
+          caches:
+            - composer
+            - node
           script:
-            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
-            - docker-php-ext-install zip
+            - apt-get update && apt-get install -qy libzip-dev zip libpng-dev git npm curl libmcrypt-dev default-mysql-client
             - docker-php-ext-install pdo_mysql
+            - docker-php-ext-install zip
+            - docker-php-ext-install gd
             - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
             - ln -f -s .env.pipelines .env
+            - npm install && npm run dev
             - php artisan migrate
-            - vendor/bin/phpunit
+            - php artisan serve &
+            - sleep 5
+            - php artisan config:clear && vendor/bin/phpunit
+          services:
+            - mysql
       - step:
           name : Execute Staging Deployment
           deployment: staging
@@ -63,27 +76,35 @@ pipelines:
     develop:
       - step:
           name: Automated Test & Deploy to Develop
-          services:
-            - mysql
           deployment: test
+          caches:
+            - composer
+            - node
           script:
-            - apt-get update && apt-get install -y libzip-dev zip default-mysql-client
-            - docker-php-ext-install zip
+            - apt-get update && apt-get install -qy libzip-dev zip libpng-dev git npm curl libmcrypt-dev default-mysql-client
             - docker-php-ext-install pdo_mysql
+            - docker-php-ext-install zip
+            - docker-php-ext-install gd
             - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
-            - composer require laravel/vapor-cli
             - ln -f -s .env.pipelines .env
+            - npm install && npm run dev
             - php artisan migrate
-            - vendor/bin/phpunit
+            - php artisan passport:install
+            - php artisan serve &
+            - sleep 5
+            - php artisan config:clear && vendor/bin/phpunit
+            - composer require laravel/vapor-cli
             - vendor/bin/vapor deploy develop
+          services:
+            - mysql
 definitions:
   services:
     mysql:
-      image: mysql:8
-      variables:
-        MYSQL_DATABASE: 'pipelines'
+      image: mysql:5.7
+      environment:
+        MYSQL_DATABASE: 'homestead'
         MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
-        MYSQL_USER: 'test_user'
-        MYSQL_PASSWORD: 'test_user_password'
+        MYSQL_USER: 'homestead'
+        MYSQL_PASSWORD: 'secret'
 
