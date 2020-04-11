@@ -34,6 +34,9 @@ class JWTUserRouteTest extends TestCase
         $header['Authorization'] = 'Bearer '.$token;
 
         $resp = $this->json('POST', '/api/me',[], $header);
+
+        var_dump(json_decode($resp->getContent(), true));
+
         $this->assertArrayHasKey('token', $resp);
     }
 
