@@ -60,4 +60,24 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * @return Merchants|null
+     */
+    public function merchant()
+    {
+        $through_model = $this->merchant_user_record()->first();
+
+        if(!is_null($through_model))
+        {
+            return $through_model->merchant()->first();
+        }
+
+        return null;
+    }
+
+    public function merchant_user_record()
+    {
+        return $this->hasOne('App\MerchantUsers', 'user_uuid', 'uuid');
+    }
 }

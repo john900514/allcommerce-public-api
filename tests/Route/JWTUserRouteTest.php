@@ -35,8 +35,6 @@ class JWTUserRouteTest extends TestCase
 
         $resp = $this->post( 'http://ac-api.capeandbay.test/api/me',[], $header);
 
-        var_dump(json_decode($resp->getContent(), true));
-
         $this->assertArrayHasKey('token', $resp);
     }
 

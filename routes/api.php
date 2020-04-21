@@ -27,4 +27,7 @@ $api->version('v1', function ($api) {
 $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     // Routes within this version group will require authentication.
     $api->post('me', 'App\Http\Controllers\API\AuthController@me');
+
+    $api->resource('users', 'App\Http\Controllers\API\UserManagementController');
+    $api->resource('inventory', 'App\Http\Controllers\API\InventoryController');
 });

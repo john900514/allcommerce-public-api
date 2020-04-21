@@ -36,7 +36,8 @@ class AuthController extends Controller
     {
         $results = [
             'user' => auth()->user(),
-            'token' => auth()->refresh()
+            'token' => auth()->refresh(),
+            'roles' => auth()->user()->getRoles()
         ];
         return response()->json($results);
     }
