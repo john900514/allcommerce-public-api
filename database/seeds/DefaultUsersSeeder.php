@@ -2,6 +2,7 @@
 
 use App\User;
 use App\Merchants;
+use App\MerchantInventory;
 use Illuminate\Database\Seeder;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 use App\Services\Merchants\UserMerchantService;
@@ -47,6 +48,7 @@ class DefaultUsersSeeder extends Seeder
             ]);
         }
         Bouncer::assign('dev')->to($angel);
+        Bouncer::allow('dev')->toOwn(Merchants::class)->to(['view','update','create']);
         UserMerchantService::assign($angel)->to($capeandbay);
 
         $tareq = User::whereEmail('tareq@capeandbay.com')->first();
@@ -59,6 +61,7 @@ class DefaultUsersSeeder extends Seeder
             ]);
         }
         Bouncer::assign('platform-admin')->to($tareq);
+        Bouncer::allow('platform-admin')->toOwn(Merchants::class)->to(['view','update','create']);
         UserMerchantService::assign($tareq)->to($capeandbay);
 
         $gedy = User::whereEmail('gedy@capeandbay.com')->first();
@@ -72,6 +75,7 @@ class DefaultUsersSeeder extends Seeder
         }
         Bouncer::assign('platform-user')->to($gedy);
         UserMerchantService::assign($gedy)->to($capeandbay);
+        Bouncer::allow('platform-admin')->toOwn(Merchants::class)->to(['view']);
 
         $merchant_owner = Bouncer::role()->firstOrCreate(
             [
@@ -123,6 +127,8 @@ class DefaultUsersSeeder extends Seeder
 
                 Bouncer::assign('merchant-owner')->to($cat);
                 Bouncer::allow($cat)->toManage($fakolacrayn);
+                Bouncer::allow($cat)->to('view', $fakolacrayn);
+                Bouncer::allow($cat)->to('update', $fakolacrayn);
                 UserMerchantService::assign($cat)->to($fakolacrayn);
 
                 // Introducing the Placeholders
@@ -138,7 +144,8 @@ class DefaultUsersSeeder extends Seeder
                 }
 
                 Bouncer::assign('merchant-api-user')->to($chris);
-                //Bouncer::allow($chris)->toOwn($fakolacrayn)->to(['access_oauth']);
+                Bouncer::allow($chris)->to('view', $fakolacrayn);
+                Bouncer::allow($chris)->to('update', $fakolacrayn);
                 UserMerchantService::assign($chris)->to($fakolacrayn);
 
                 $barb = User::whereEmail('barb@placeholder.com')->first();
@@ -152,7 +159,7 @@ class DefaultUsersSeeder extends Seeder
                 }
 
                 Bouncer::assign('merchant-admin', $fakolacrayn)->to($barb);
-                //Bouncer::allow($barb)->toOwn($fakolacrayn)->to(['update']);
+                Bouncer::allow($barb)->to('view', $fakolacrayn);
                 UserMerchantService::assign($barb)->to($fakolacrayn);
 
                 $charles = User::whereEmail('charles@placeholder.com')->first();
@@ -166,8 +173,8 @@ class DefaultUsersSeeder extends Seeder
                 }
 
                 Bouncer::assign('merchant-user', $fakolacrayn)->to($charles);
+                Bouncer::allow($charles)->to('view', $fakolacrayn);
                 UserMerchantService::assign($charles)->to($fakolacrayn);
-
 
                 $cannasaurus = Merchants::firstOrCreate([
                     'name' => 'Cannasaurus CBD',
@@ -215,10 +222,16 @@ class DefaultUsersSeeder extends Seeder
                 }
 
                 Bouncer::assign('merchant-owner', $cannasaurus)->to($ross);
-                Bouncer::allow($cat)->toManage($fakolacrayn);
+                Bouncer::allow($ross)->toManage($cannasaurus);
+                Bouncer::allow($ross)->to('view', $cannasaurus);
+                Bouncer::allow($ross)->to('update', $cannasaurus);
                 Bouncer::assign('merchant-api-user', $cannasaurus)->to($zoe);
+                Bouncer::allow($zoe)->to('view', $cannasaurus);
+                Bouncer::allow($zoe)->to('update', $cannasaurus);
                 Bouncer::assign('merchant-admin', $cannasaurus)->to($candace);
+                Bouncer::allow($candace)->to('view', $cannasaurus);
                 Bouncer::assign('merchant-user', $cannasaurus)->to($rhys);
+                Bouncer::allow($rhys)->to('view', $cannasaurus);
                 UserMerchantService::assign($ross)->to($cannasaurus);
                 UserMerchantService::assign($zoe)->to($cannasaurus);
                 UserMerchantService::assign($candace)->to($cannasaurus);

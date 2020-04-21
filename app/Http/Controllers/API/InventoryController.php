@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
+use Silber\Bouncer\BouncerFacade as Bouncer;
+use App\Actions\Merchants\Inventory\GetAllInventory;
 
 class InventoryController extends Controller
 {
@@ -21,42 +24,52 @@ class InventoryController extends Controller
     /**
      * GET /inventory
      */
-    public function index()
+    public function index(GetAllInventory $action)
     {
-        $results = ['success' => false];
+        $results = 'Unauthorized';
+        $status = 401;
 
         $user = auth()->user();
         $merchant = $user->merchant();
 
-        // Get merchant_inventory record
-        $inventory = $merchant->inventory()->get();
-
-        if(count($inventory) > 0)
+        if(!Bouncer::is($merchant)->an('allcommerce'))
         {
-            $payload = [
-                'inventory' => []
-            ];
-            foreach($inventory as $product)
+            $header_uuid = $this->request->header('merchant-uuid');
+            $access_merchant_uuid = (!is_null($header_uuid)) ? $header_uuid : $merchant->uuid;
+
+            $results = $action->execute($access_merchant_uuid);
+
+            if(is_array($results))
             {
-                $data = $product->toArray();
-                // Get inventory variants
-                $variants = $product->variants()->get();
-
-                // Get variant options
-                $variant_option = $product->variant_options()->get();
-
-                // Curate and return
-                $data['variants'] = $variants->toArray();
-                $data['variant_options'] = $variant_option->toArray();
-                $payload['inventory'][] = $data;
+                $status = 200;
             }
+            else
+            {
+                $results = 'Not Found';
+                $status = 404;
+            }
+        }
+        else
+        {
+            $access_merchant_uuid = $this->request->header('merchant_uuid');
 
-            $payload['merchant'] = $merchant->toArray();
-            $payload['success'] = true;
-            $results = $payload;
+            if(!is_null($access_merchant_uuid))
+            {
+                $results = $action->execute($access_merchant_uuid);
+
+                if(is_array($results))
+                {
+                    $status = 200;
+                }
+                else
+                {
+                    $results = 'Invalid Merchant';
+                    $status = 405;
+                }
+            }
         }
 
-        return response()->json($results);
+        return response($results,$status);
     }
 
     public function create()
