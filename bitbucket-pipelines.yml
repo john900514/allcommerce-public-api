@@ -22,7 +22,7 @@ pipelines:
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
             - ln -f -s .env.pipelines .env
             - npm install && npm run dev
-            - php artisan migrate
+            - php artisan migrate --seed
             - php artisan serve &
             - sleep 5
             - php artisan config:clear && vendor/bin/phpunit
@@ -55,7 +55,7 @@ pipelines:
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
             - ln -f -s .env.pipelines .env
             - npm install && npm run dev
-            - php artisan migrate
+            - php artisan migrate --seed
             - php artisan serve &
             - sleep 5
             - php artisan config:clear && vendor/bin/phpunit
@@ -89,7 +89,7 @@ pipelines:
             - composer install --no-interaction --prefer-dist  --optimize-autoloader
             - ln -f -s .env.pipelines .env
             - npm install && npm run dev
-            - php artisan migrate
+            - php artisan migrate --seed
             - php artisan serve &
             - sleep 5
             - php artisan config:clear && vendor/bin/phpunit
