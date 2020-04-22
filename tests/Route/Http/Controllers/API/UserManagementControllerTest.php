@@ -40,7 +40,7 @@ class UserManagementControllerTest extends TestCase
             $header['Accept'] = 'vnd.allcommerce.v1+json';
             $header['Authorization'] = 'Bearer '.$token;
 
-            $resp = $this->get( 'http://ac-api.capeandbay.test/api/users', $header);
+            $resp = $this->get( '/api/users', $header);
             $resp->assertStatus(200);
 
             if(Bouncer::is($user)->a('dev-god', 'dev'))

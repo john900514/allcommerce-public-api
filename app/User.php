@@ -78,6 +78,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function merchant_user_record()
     {
-        return $this->hasOne('App\MerchantUsers', 'user_uuid', 'uuid');
+        return $this->hasMany('App\MerchantUsers', 'user_uuid', 'uuid');
     }
 }
