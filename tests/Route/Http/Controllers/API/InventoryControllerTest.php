@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Http\Controllers\API;
 
-use App\Merchants;
 use App\User;
+use App\Merchants;
 use Tests\TestCase;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 use Illuminate\Foundation\Testing\DatabaseTransactions;

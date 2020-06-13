@@ -2,7 +2,7 @@
 
 namespace Tests\Route\Http\Controller;
 
-use App\Merchants;
+use App\User;
 use Tests\TestCase;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -37,8 +37,7 @@ class MerchantControllerTest extends TestCase
             $this->assertTrue(is_array($result));
             $this->assertTrue($result['success']);
             $this->assertArrayHasKey('merchant', $result);
-
-
+            
             $resp->assertStatus(200);
         }
     }
