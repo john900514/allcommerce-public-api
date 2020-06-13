@@ -98,7 +98,7 @@ class MerchantControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('msg', $result);
-        $this->assertTrue($result['reason'] == 'Error - Shop Assigned to Another Merchant.');
+        $this->assertTrue($result['reason'] == 'Shop Assigned to Another Merchant.');
     }
 
     public function testLinkToShopifyFailBecauseAppIsNotInstalled()
@@ -119,7 +119,7 @@ class MerchantControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('msg', $result);
-        $this->assertTrue($result['reason'] == 'Error - Shop Not Installed');
+        $this->assertTrue($result['reason'] == 'Shop Not Installed');
     }
 
     public function testLinkToShopifyFailFromShopNotExist()
@@ -141,7 +141,7 @@ class MerchantControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('msg', $result);
-        $this->assertTrue($result['reason'] == 'Error - Invalid Shopify Shop');
+        $this->assertTrue($result['reason'] == 'Invalid Shopify Shop');
     }
 
     public function testLinkToShopifyFailFromMissingShopParameter()
@@ -163,7 +163,7 @@ class MerchantControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('msg', $result);
-        $this->assertTrue($result['reason'] == 'Error - Missing Shopify Shop');
+        $this->assertTrue($result['reason'] == 'Missing Shopify Shop');
     }
 
     public function testLinkToShopifyFailFromPermissions()
@@ -184,7 +184,7 @@ class MerchantControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('reason', $result);
         $this->assertArrayHasKey('msg', $result);
-        $this->assertTrue($result['reason'] == 'Error - Invalid Permissions');
+        $this->assertTrue($result['reason'] == 'Invalid Permissions');
 
     }
 
