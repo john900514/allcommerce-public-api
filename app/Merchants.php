@@ -54,4 +54,9 @@ class Merchants extends Model
     {
         return $this->hasMany('App\MerchantInventory', 'merchant_uuid', 'uuid');
     }
+
+    public function shopify_installs()
+    {
+        return $this->hasMany('App\ShopifyInstalls', 'merchant_uuid', 'uuid');
+    }
 }

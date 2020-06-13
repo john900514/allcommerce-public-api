@@ -30,4 +30,9 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
 
     $api->resource('users', 'App\Http\Controllers\API\UserManagementController');
     $api->resource('inventory', 'App\Http\Controllers\API\InventoryController');
+
+    $api->group(['prefix' => 'merchant'], function ($api) {
+        $api->get('/', 'App\Http\Controllers\API\MerchantController@index');
+    });
+
 });
