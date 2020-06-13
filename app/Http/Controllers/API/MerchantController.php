@@ -55,7 +55,7 @@ class MerchantController extends Controller
     {
         $results = [
             'success' => false,
-            'reason' => 'Error - Invalid Permissions',
+            'reason' => 'Invalid Permissions',
             'msg' => 'You must be the account owner to link a Shopify Shop to AllCommerce.'
         ];
 
@@ -101,26 +101,26 @@ class MerchantController extends Controller
                             }
                             else
                             {
-                                $results['reason'] = 'Error - Shop Assigned to Another Merchant.';
-                                $results['msg'] = 'An account can have multiple shops. But a shop can on;y have one merchant. And it\'s not you..';
+                                $results['reason'] = 'Shop Assigned to Another Merchant.';
+                                $results['msg'] = 'An account can have multiple shops. But a shop can only have one merchant. And that\'s not you..';
                             }
                         }
                     }
                     else
                     {
-                        $results['reason'] = 'Error - Shop Not Installed';
+                        $results['reason'] = 'Shop Not Installed';
                         $results['msg'] = 'Delete the app and re-install.';
                     }
                 }
                 else
                 {
-                    $results['reason'] = 'Error - Invalid Shopify Shop';
+                    $results['reason'] = 'Invalid Shopify Shop';
                     $results['msg'] = 'We can\'t find this shop on file. If you are using the API instead of the Shopify Admin, stop.';
                 }
             }
             else
             {
-                $results['reason'] = 'Error - Missing Shopify Shop';
+                $results['reason'] = 'Missing Shopify Shop';
                 $results['msg'] = 'If you are using the API instead of the Shopify Admin, stop.';
             }
         }
