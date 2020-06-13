@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Merchants;
+use App\ShopifyInstalls;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+use Silber\Bouncer\BouncerFacade as Bouncer;
 
 class MerchantController extends Controller
 {
@@ -46,13 +48,83 @@ class MerchantController extends Controller
             }
         }
 
-        return $results;
+        return $this->response()->array($results);
     }
 
-    public function link_to_shopify()
+    public function link_to_shopify(ShopifyInstalls $installs)
     {
-        $results = ['success' => false];
+        $results = [
+            'success' => false,
+            'reason' => 'Error - Invalid Permissions',
+            'msg' => 'You must be the account owner to link a Shopify Shop to AllCommerce.'
+        ];
 
-        return $results;
+        if(Bouncer:: is(auth()->user())->a('merchant-owner'))
+        {
+            $data = $this->request->all();
+
+            if(array_key_exists('shop', $data))
+            {
+                $install = $installs->whereShopifyStoreUrl($data['shop'])->first();
+                $merchant = auth()->user()->merchant();
+
+                if(!is_null($install))
+                {
+                    if($install->installed == 1)
+                    {
+                        if(is_null($install->merchant_uuid))
+                        {
+                            // @todo - potentially validate for null
+                            $install->merchant_uuid = $merchant->uuid;
+
+                            $install_count = $installs->whereMerchantUuid($merchant->uuid)->get();
+                            if(count($install_count) == 0)
+                            {
+                                $install->default_store = 1;
+                            }
+
+                            if($install->save())
+                            {
+                                $results = ['success' => true];
+                            }
+                            else
+                            {
+                                $results['reason'] = 'There was an issue.';
+                                $results['msg'] = 'It\'s our fault, though, maybe try again.';
+                            }
+                        }
+                        else
+                        {
+                            if($install->merchant_uuid == $merchant->uuid)
+                            {
+                                $results = ['success' => true];
+                            }
+                            else
+                            {
+                                $results['reason'] = 'Error - Shop Assigned to Another Merchant.';
+                                $results['msg'] = 'An account can have multiple shops. But a shop can on;y have one merchant. And it\'s not you..';
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $results['reason'] = 'Error - Shop Not Installed';
+                        $results['msg'] = 'Delete the app and re-install.';
+                    }
+                }
+                else
+                {
+                    $results['reason'] = 'Error - Invalid Shopify Shop';
+                    $results['msg'] = 'We can\'t find this shop on file. If you are using the API instead of the Shopify Admin, stop.';
+                }
+            }
+            else
+            {
+                $results['reason'] = 'Error - Missing Shopify Shop';
+                $results['msg'] = 'If you are using the API instead of the Shopify Admin, stop.';
+            }
+        }
+
+        return $this->response()->array($results);
     }
 }

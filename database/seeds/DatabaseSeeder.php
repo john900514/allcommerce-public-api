@@ -14,5 +14,10 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesSeeder::class);
         $this->call(MerchantSeeder::class);
         $this->call(DefaultUsersSeeder::class);
+
+        if((env('APP_ENV') == 'testing') || (env('APP_ENV') == 'pipelines'))
+        {
+            $this->call(ShopifyInstallsSeeder::class);
+        }
     }
 }

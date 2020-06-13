@@ -35,4 +35,9 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
         $api->get('/', 'App\Http\Controllers\API\MerchantController@index');
     });
 
+    $api->group(['prefix' => 'shopify'], function ($api) {
+        $api->group(['prefix' => 'merchant'], function ($api) {
+            $api->post('/assign', 'App\Http\Controllers\API\MerchantController@link_to_shopify');
+        });
+    });
 });
