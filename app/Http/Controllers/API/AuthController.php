@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\User;
 use App\Merchants;
+use App\ShopifyInstalls;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 
 class AuthController extends Controller
@@ -90,4 +93,71 @@ class AuthController extends Controller
         }
         return response()->json($results);
     }
+
+    public function shopify_sso(ShopifyInstalls $installs, User $users)
+    {
+        $results = ['success' => false, 'reason' => 'No Merchant Assigned!'];
+
+        $data = $this->request->all();
+
+        $validated = Validator::make($data, [
+            'hmac' => 'bail|required',
+            'shop' => 'bail|required',
+            'timestamp' => 'bail|required',
+            'session' => 'bail|required',
+            'locale' => 'bail|required',
+        ]);
+
+        if ($validated->fails())
+        {
+            foreach($validated->errors()->toArray() as $col => $msg)
+            {
+                $results['reason'] = $msg[0];
+                break;
+            }
+        }
+        else
+        {
+            // @todo - validate the HMAC
+            if(true)
+            {
+                $install = $installs->whereShopifyStoreUrl($data['shop'])
+                    ->first();
+
+                if(!is_null($install))
+                {
+                    if(!is_null($install->merchant_uuid))
+                    {
+                        $merchant = $install->merchant()->first();
+
+                        if(!is_null($merchant))
+                        {
+                            $user = $merchant->merchant_owner();
+                            auth()->login($user);
+                            return $this->me();
+                        }
+                        else
+                        {
+                            $results['reason'] = 'Could Not Locate Assigned Merchant!';
+                        }
+                    }
+                    else
+                    {
+                        $results['reason'] = 'No User Assigned!';
+                    }
+                }
+                else
+                {
+                    $results['reason'] = 'Invalid Shop!';
+                }
+            }
+            else
+            {
+                $results['reason'] = 'Could not validate request';
+            }
+        }
+
+        return $results;
+    }
+
 }

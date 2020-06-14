@@ -22,6 +22,11 @@ $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', function ($api) {
     // Routes within this version group will require authentication.
     $api->post('login', 'App\Http\Controllers\API\AuthController@login');
+
+    $api->group(['prefix' => 'shopify'], function ($api) {
+        $api->post('sso', 'App\Http\Controllers\API\AuthController@shopify_sso');
+    });
+
 });
 
 $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
@@ -38,6 +43,11 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
     $api->group(['prefix' => 'shopify'], function ($api) {
         $api->group(['prefix' => 'merchant'], function ($api) {
             $api->post('/assign', 'App\Http\Controllers\API\MerchantController@link_to_shopify');
+        });
+
+        $api->group(['prefix' => 'inventory'], function ($api) {
+            $api->post('/', 'App\Http\Controllers\API\InventoryController@get_shopify_inventory');
+            $api->post('/new', 'App\Http\Controllers\API\InventoryController@compare_with_shopify');
         });
     });
 });

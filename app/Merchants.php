@@ -59,4 +59,33 @@ class Merchants extends Model
     {
         return $this->hasMany('App\ShopifyInstalls', 'merchant_uuid', 'uuid');
     }
+
+    public function merchant_users()
+    {
+        return $this->hasMany('App\MerchantUsers', 'merchant_uuid', 'uuid')
+            ->with('user');
+    }
+
+    public function merchant_owner()
+    {
+        $results = false;
+
+        $users = $this->merchant_users()
+            ->get();
+
+        if(count($users) > 0)
+        {
+            foreach ($users as $merchant_user)
+            {
+
+                if(Bouncer::is($merchant_user->user)->a('merchant-owner'))
+                {
+                    $results = $merchant_user->user;
+                    break;
+                }
+            }
+        }
+
+        return $results;
+    }
 }

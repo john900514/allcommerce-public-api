@@ -85,6 +85,12 @@ class MerchantController extends Controller
 
                             if($install->save())
                             {
+                                // @todo - this could prolly go somewhere better
+                                Bouncer::allow(auth()->user())->to(['view', 'update'], $merchant);
+
+                                // @todo - make sure this is one line that gets reversed if they unlink or shopify says so or gdrp
+                                Bouncer::allow($merchant)->to(['view', 'update', 'unlink'], $install);
+
                                 $results = ['success' => true];
                             }
                             else

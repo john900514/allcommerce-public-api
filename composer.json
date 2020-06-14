@@ -14,6 +14,7 @@
         "laravel/tinker": "^2.0",
         "laravel/vapor-core": "^2.2",
         "dingo/api": "^2.4.0",
+        "ixudra/curl": "^6.17",
         "silber/bouncer": "v1.0.0-rc.6",
         "spatie/laravel-activitylog": "^3.9",
         "tymon/jwt-auth": "1.0.x-dev"

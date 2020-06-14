@@ -16,6 +16,6 @@ class MerchantUsers extends Model
 
     public function user()
     {
-        return $this->hasOne('App\User', 'user_uuid', 'uuid');
+        return $this->hasOne('App\User', 'uuid', 'user_uuid');
     }
 }
