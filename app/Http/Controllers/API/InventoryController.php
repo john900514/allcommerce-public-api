@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\MerchantInventory;
 use App\ShopifyInstalls;
 use Dingo\Api\Http\Request;
 use Ixudra\Curl\Facades\Curl;
@@ -155,7 +156,7 @@ class InventoryController extends Controller
         return $results;
     }
 
-    public function compare_with_shopify(GetAllInventory $action)
+    public function compare_with_shopify(MerchantInventory $inventory, ShopifyInstalls $installs)
     {
         $results = $this->get_shopify_inventory();
 
@@ -163,19 +164,29 @@ class InventoryController extends Controller
         {
             $user = auth()->user();
             $merchant = $user->merchant();
+            $data = $this->request->all();
 
             // Get All Native Inventory (If empty - send back all shopify items)
-            if($ac_stuff = $action->execute($merchant->uuid))
+            $install = $installs->whereShopifyStoreUrl($data['shop'])
+                ->with('merchant_inventory')
+                ->first();
+
+
+            if(!is_null($install))
             {
                 // If not empty, foreach item in the inventory, compare the item number with the shopify results
-                if(count($ac_stuff) > 0)
+                if(count($install->merchant_inventory) > 0)
                 {
-                    /**
-                     * STEPS
-                     * @todo - compare variants as well
-                     * 4. Remove any items/variants that match the db results;
-                     * 5. Return any remaining items.
-                     */
+                    foreach($install->merchant_inventory->toArray() as $x => $local_item)
+                    {
+                        foreach($results['listings'] as $y => $shopify_item)
+                        {
+                            if($local_item['platform_id'] == $shopify_item['product_id'])
+                            {
+                                unset($results['listings'][$y]);
+                            }
+                        }
+                    }
                 }
             }
         }
