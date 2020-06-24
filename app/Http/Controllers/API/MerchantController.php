@@ -133,4 +133,55 @@ class MerchantController extends Controller
 
         return $this->response()->array($results);
     }
+
+    public function linked_shop_channels()
+    {
+        // @todo - scale this to support the merchant in the header
+        // @todo - as well as permissions
+        $results = ['success' => false, 'results' => 'Invalid User'];
+
+        $user = auth()->user();
+        $channels = [
+            'shopify' => []
+        ];
+        $payload_channels = [];
+
+        if(!is_null($user))
+        {
+            $merchant = $user->merchant();
+
+            // See if this merchant has any active shop channels
+            // Right now there is only one shop channel integrated - shopify
+            // @todo - this is where we check for future installs as well.
+            foreach($channels as $channel => $installs)
+            {
+                switch($channel)
+                {
+                    case 'shopify':
+                        $installs = $merchant->shopify_channels->get();
+
+                        if(count($installs) > 0)
+                        {
+                            $payload_channels['shopify'] = [];
+
+                            foreach ($installs as $install)
+                            {
+                                $payload_channels['shopify'][] = [
+                                    'store_url' => $install->shopify_store_url,
+                                    'uuid' => $install->uuid,
+                                    'default_shop' => $install->default_store
+                                ];
+                            }
+                        }
+                        break;
+
+                    default:
+                }
+            }
+
+            $results = ['success' => true, 'channels' => $payload_channels];
+        }
+
+        return $this->response()->array($results);
+    }
 }

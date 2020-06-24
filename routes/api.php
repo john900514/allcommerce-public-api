@@ -38,6 +38,7 @@ $api->version('v1', ['middleware' => 'api.auth'], function ($api) {
 
     $api->group(['prefix' => 'merchant'], function ($api) {
         $api->get('/', 'App\Http\Controllers\API\MerchantController@index');
+        $api->get('/channels', 'App\Http\Controllers\API\MerchantController@linked_shop_channels');
     });
 
     $api->group(['prefix' => 'shopify'], function ($api) {
