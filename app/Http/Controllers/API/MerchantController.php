@@ -158,7 +158,7 @@ class MerchantController extends Controller
                 switch($channel)
                 {
                     case 'shopify':
-                        $installs = $merchant->shopify_channels->get();
+                        $installs = $merchant->shopify_installs()->get();
 
                         if(count($installs) > 0)
                         {
