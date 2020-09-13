@@ -18,7 +18,8 @@
         "laravel/vapor-core": "^2.2",
         "silber/bouncer": "v1.0.0-rc.6",
         "spatie/laravel-activitylog": "^3.9",
-        "tymon/jwt-auth": "1.0.x-dev"
+        "tymon/jwt-auth": "1.0.x-dev",
+        "goldspecdigital/laravel-eloquent-uuid": "^6.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

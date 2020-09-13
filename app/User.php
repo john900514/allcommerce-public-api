@@ -2,17 +2,17 @@
 
 namespace App;
 
-use App\Traits\UuidModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Silber\Bouncer\Database\HasRolesAndAbilities;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Silber\Bouncer\Database\HasRolesAndAbilities;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasRolesAndAbilities, LogsActivity, Notifiable, SoftDeletes, UuidModel;
+    use HasRolesAndAbilities, LogsActivity, Notifiable, SoftDeletes, Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +29,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'id','password', 'remember_token','deleted_at','email_verified_at'
+        'password', 'remember_token','deleted_at','email_verified_at'
     ];
 
     /**
@@ -38,6 +38,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $casts = [
+        'id' => 'uuid',
+        'client_id' => 'uuid',
         'email_verified_at' => 'datetime',
     ];
 
@@ -79,5 +81,20 @@ class User extends Authenticatable implements JWTSubject
     public function merchant_user_record()
     {
         return $this->hasMany('App\MerchantUsers', 'user_uuid', 'uuid');
+    }
+
+    public function username()
+    {
+        return 'username'; //or return the field which you want to use.
+    }
+
+    public function client()
+    {
+        return $this->hasOne('App\Clients', 'id', 'client_id');
+    }
+
+    public function isHostUser()
+    {
+        return $this->client_id == Clients::getHostClient();
     }
 }

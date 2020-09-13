@@ -25,6 +25,8 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
+        $credentials['username'] = $credentials['email'];
+        unset($credentials['email']);
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -40,6 +42,11 @@ class AuthController extends Controller
     public function me()
     {
         $user = auth()->user();
+        $client = $user->client()->first();
+        $merchants = $client->merchants()->get();
+        $shops = $client->shops()->get();
+
+        /*
         $users_default_merchant = $user->merchant();
 
         $merchants = [];
@@ -78,18 +85,21 @@ class AuthController extends Controller
                 $merchants[$users_default_merchant->uuid] = $users_default_merchant->name;
             }
         }
+        */
 
         $results = [
             'user' => $user,
             'token' => auth()->refresh(),
             'roles' => auth()->user()->getRoles(),
-            'merchants' => $merchants,
+            'client' => $client->toArray(),
+            'merchants' => $merchants->toArray(),
+            'shops' => $shops->toArray(),
         ];
 
-        if(Bouncer::is($users_default_merchant)->an('allcommerce'))
+        if($user->isHostUser())
         {
             $results['is_allcommerce'] = true;
-            $results['capeandbay_uuid'] = $users_default_merchant->uuid;
+            $results['capeandbay_uuid'] = $client->getHostClient();
         }
         return response()->json($results);
     }
@@ -122,11 +132,22 @@ class AuthController extends Controller
             if(true)
             {
                 $install = $installs->whereShopifyStoreUrl($data['shop'])
+                    ->with('signed_in_user')
                     ->first();
 
                 if(!is_null($install))
                 {
-                    if(!is_null($install->merchant_uuid))
+                    if(!is_null($install->signed_in_user))
+                    {
+                        auth()->login($install->signed_in_user);
+                        return $this->me();
+                    }
+                    else
+                    {
+                        $results['reason'] = 'No User Assigned!';
+                    }
+
+                    if(!is_null($install->merchant_id))
                     {
                         $merchant = $install->merchant()->first();
 
@@ -140,10 +161,6 @@ class AuthController extends Controller
                         {
                             $results['reason'] = 'Could Not Locate Assigned Merchant!';
                         }
-                    }
-                    else
-                    {
-                        $results['reason'] = 'No User Assigned!';
                     }
                 }
                 else

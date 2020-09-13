@@ -103,6 +103,7 @@ class MerchantController extends Controller
                         {
                             if($install->merchant_uuid == $merchant->uuid)
                             {
+
                                 $results = ['success' => true];
                             }
                             else

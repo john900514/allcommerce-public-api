@@ -115,9 +115,10 @@ class InventoryController extends Controller
         if(array_key_exists('shop', $data))
         {
             $user = auth()->user();
-            $merchant = $user->merchant();
-            $install = $this->shopify_installs->whereMerchantUuid($merchant->uuid)
-                ->whereShopifyStoreUrl($data['shop'])
+
+            // is the user assigned to the client, whose merchant owns the shop?
+            $install = $this->shopify_installs->whereShopifyStoreUrl($data['shop'])
+                ->whereClientId($user->client_id)
                 ->first();
 
             if(!is_null($install))
@@ -125,16 +126,19 @@ class InventoryController extends Controller
                 $headers = [
                     'X-Shopify-Access-Token: '.$install->access_token
                 ];
+
                 // Call out to shopify for product listing or fail
-                $response  = Curl::to('https://'.$data['shop'].'/admin/api/2020-04/product_listings.json')
+                // NOTE - this will fail, this is not a sales-channel.
+                // @todo - convert this to just products.
+                $response  = Curl::to('https://'.$data['shop'].'/admin/api/2020-07/products.json')
                     ->withHeaders($headers)
                     ->asJson(true)
                     ->get();
 
-                if(is_array($response) && array_key_exists('product_listings', $response))
+                if(is_array($response) && array_key_exists('products', $response))
                 {
                     //Return the product listing (:
-                    $results = ['success' => true, 'listings' => $response['product_listings']];
+                    $results = ['success' => true, 'listings' => $response['products']];
                 }
                 else
                 {
@@ -163,7 +167,7 @@ class InventoryController extends Controller
         if($results['success'])
         {
             $user = auth()->user();
-            $merchant = $user->merchant();
+            //$merchant = $user->merchant();
             $data = $this->request->all();
 
             // Get All Native Inventory (If empty - send back all shopify items)
@@ -181,7 +185,7 @@ class InventoryController extends Controller
                     {
                         foreach($results['listings'] as $y => $shopify_item)
                         {
-                            if($local_item['platform_id'] == $shopify_item['product_id'])
+                            if($local_item['platform_id'] == $shopify_item['id'])
                             {
                                 unset($results['listings'][$y]);
                             }
